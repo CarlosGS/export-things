@@ -55,12 +55,12 @@ def httpGet(page, filename=False, redir=True):
 
 thingList = {}
 
-print("Usuario: " + user)
+print("Username: " + user)
 
 thingCount = 0
 pgNum = 1
 while 1: # Iterate over all the pages of things
-    print("\nPagina: " + str(pgNum))
+    print("\nPage number: " + str(pgNum))
     res = httpGet(url + user + "/designs/page:" + str(pgNum), redir=False)#, filename="test" + str(pgNum) + ".html")
     if res == -1: break
     res_xml = BeautifulSoup(res)
@@ -71,7 +71,7 @@ while 1: # Iterate over all the pages of things
         title = title.strip()
         id = str(thing["data-thing-id"]) # Get title and id of the current thing
         
-        print("\nProcesando " + id + " : " + title)
+        print("\nProcessing thing: " + id + " : " + title)
         
         #folder = title.replace(' ', '-').replace('(', '').replace(')', '').replace('*', '')
         folder = "-".join(re.findall("[a-zA-Z0-9]+", title)) # Create a clean title for our folder
@@ -82,14 +82,14 @@ while 1: # Iterate over all the pages of things
         makeDirs(folder) # Create the required directories
         makeDirs(folder + "/img")
         
-        print("Descargando imagen de vista previa ( " + previewImgName + " )")
+        print("Downloading preview image ( " + previewImgName + " )")
         httpGet(previewImgUrl, previewImgFile) # Download the preview image
         
-        print("Cargando datos")
+        print("Loading thing data")
         
         res = httpGet(url + "/thing:" + id, redir=False) # Load the page of the thing
         if res == -1:
-            print("Error al descargar " + id + " : " + title)
+            print("Error while downloading " + id + " : " + title)
             exit()
         res_xml = BeautifulSoup(res)
         
@@ -142,13 +142,13 @@ while 1: # Iterate over all the pages of things
             fileUrl = url + str(file.a["href"])
             fileName = str(file.a["title"])
             filePath = folder + "/" + fileName
-            print("Descargando archivo ( " + fileName + " )")
+            print("Downloading file ( " + fileName + " )")
             httpGet(fileUrl, filePath)
             
             filePreviewUrl = str(file.img["src"])
             filePreviewPath = filePreviewUrl.split('/')[-1]
             filePreview = folder + "/img/" + filePreviewPath
-            print("Descargando preview ( " + filePreviewPath + " )")
+            print("-> Downloading preview image ( " + filePreviewPath + " )")
             httpGet(filePreviewUrl, filePreview)
             
             files[filePath] = {}
@@ -162,7 +162,7 @@ while 1: # Iterate over all the pages of things
             imgUrl = str(image["data-large-url"])
             imgName = imgUrl.split('/')[-1]
             imgFile = folder + "/img/" + imgName
-            print("Descargando imagen ( " + imgName + " )")
+            print("Downloading image ( " + imgName + " )")
             httpGet(imgUrl, imgFile)
             images.append(imgName)
         
@@ -231,4 +231,5 @@ with open("README.md", 'w') as fd: # Generate the global README file with the li
     fd.close()
     fd.close()
 
+print("\n\nIt's done!! Keep knowledge free!! Au revoir Thingiverse!!\n")
 
