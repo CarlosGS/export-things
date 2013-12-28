@@ -3,7 +3,10 @@ export_things.py
 
 Script that simplifies exporting all your stuff out of Thingiverse  
 It creates a Git-compatible directory with a list and folders. Each folder contains all the files, images and description for each design.  
-Free your things! Au revoir Thingiverse!
+Free your things! Au revoir Thingiverse!  
+
+Example of the result: <https://github.com/carlosgs/carlosgs-designs>  
+
 
 Disclaimer
 --------
