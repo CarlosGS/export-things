@@ -18,7 +18,7 @@ import re
 user = "carlosgs" # User from Thingiverse (as in the profile URL)
 authorName = "Carlos Garcia Saura (carlosgs)" # Any string is OK
 authorDescription = "<http://carlosgs.es/>"
-readmeHeader = "**Please note: This list has been automatically generated. Some of the designs have been updated since then, and already have their own GitHub page.**  \n"
+readmeHeader = "**Please note: This list has been [automatically generated](https://github.com/carlosgs/export-things). Some of the designs have been updated since then, and already have their own GitHub page.**  \n"
 
 
 
