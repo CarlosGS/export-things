@@ -23,6 +23,8 @@ Instructions
 * Run the script from the same directory (python export_things.py)
 * _Optional:_ Commit and push the changes into your Git repository
 
+You can also **browse the generated directories offline**, by simply using a **Markdown viewer** (i.e. [MarkdownPreview](https://chrome.google.com/webstore/detail/markdown-preview/jmchmkecamhbiokiopfpnfgbidieafmd?hl=en) for Chrome)  
+
 Credit
 --------
 * Thanks to everyone who is re-sharing the script
