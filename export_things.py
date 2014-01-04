@@ -64,7 +64,14 @@ def httpGet(page, filename=False, redir=True):
 			fd.close()
 		return r.history
 
-
+# Helper function to remove all html tags and format to a BeautifulSoup object
+# This is a patch, since the getText function gives problems with non-ascii characters
+def myGetText(BScontent):
+	try:
+		text = str(BScontent.getText(separator=u' ')) # Won't work with non-ascii characters
+	except:
+		text = re.sub('<[^<]+?>', '', str(BScontent)) # If there are non-ascii characters, we strip tags manually with a regular expression
+	return text.strip() # Remove leading and trailing spaces
 
 thingList = {}
 
@@ -133,9 +140,7 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 			
 			license = res_xml.findAll("div", { "class":"license-text" })
 			if license:
-				license = re.sub('<[^<]+?>', '', str(license[0]))
-				#license = str(license[0].getText(separator=u' ')) # Get the license
-				license = license.strip()
+				license = myGetText(license[0]) # Get the license
 			else:
 				license = "CC-BY-SA (default, check actual license)"
 			
@@ -143,9 +148,7 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 			
 			tags = res_xml.findAll("div", { "class":"thing-info-content thing-detail-tags-container" })
 			if tags:
-				tags = re.sub('<[^<]+?>', '', str(tags[0]))
-				#tags = str(tags[0].getText(separator=u' ')) # Get the tags
-				tags = tags.strip()
+				tags = myGetText(tags[0]) # Get the tags
 			else:
 				tags = "None"
 			if len(tags) < 2: tags = "None"
@@ -154,9 +157,7 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 			
 			header = res_xml.findAll("div", { "class":"thing-header-data" })
 			if header:
-				#header = re.sub('<[^<]+?>', '', str(header[0]))
-				header = str(header[0].getText(separator=u' ')) # Get the header (title + date published)
-				header = header.strip()
+				header = myGetText(header[0]) # Get the header (title + date published)
 			else:
 				header = "None"
 			if len(header) < 2: header = "None"
