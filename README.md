@@ -25,6 +25,13 @@ Instructions
 
 You can also **browse the generated directories offline**, by simply using a **Markdown viewer** (i.e. [MarkdownPreview](https://chrome.google.com/webstore/detail/markdown-preview/jmchmkecamhbiokiopfpnfgbidieafmd?hl=en) for Chrome)  
 
+**New features**  
+* Select which page to download (save your liked things too!)
+* Files can be downloaded OR linked from the original website to save disk space
+* Customize authorship
+* Customize the header for the pages
+* Select if files will be re-downloaded if already present
+
 Credit
 --------
 * Thanks to everyone who is re-sharing the script
