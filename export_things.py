@@ -53,7 +53,10 @@ def httpGet(page, filename=False, redir=True):
 		print(r.status_code)
 		return -1
 	if not filename:
-		return r.text
+		# Remove all non ascii characters
+		text = (c for c in r.text if 0 < ord(c) < 127)
+		text = ''.join(text)
+		return text.encode('ascii', 'ignore')
 	else:
 		with open(filename, 'wb') as fd:
 			for chunk in r.iter_content(512):
@@ -77,7 +80,7 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 	pgNum = 1
 	while 1: # Iterate over all the pages of things
 		print("\nPage number: " + str(pgNum))
-#		if pgNum != 4:
+#		if pgNum < 17:
 #			pgNum += 1
 #			continue
 		res = httpGet(url + "/" + user + urlPathToDownload + str(pgNum), redir=False)#, filename="test" + str(pgNum) + ".html")
@@ -86,13 +89,13 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 		things = res_xml.findAll("div", { "class":"thing thing-interaction-parent" })
 		for thing in things: # Iterate over each thing
 			#title = str(thing["title"])
-			title = str(thing.findAll("span", { "class":"thing-name" })[0].text)
+			title = str(thing.findAll("span", { "class":"thing-name" })[0].text.encode('utf-8', 'ignore'))
 			title = re.sub("\[[^\]]*\]","", title) # Optional: Remove text within brackets from the title
 			title = title.strip()
 			id = str(thing["data-thing-id"]) # Get title and id of the current thing
 			
 			print("\nProcessing thing: " + id + " : " + title)
-#			if id != "125666": continue
+#			if id != "59196": continue
 			
 			folder = "-".join(re.findall("[a-zA-Z0-9]+", title)) # Create a clean title for our folder
 			print(folder)
@@ -128,10 +131,10 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 			else:
 				instructions = "None"
 			
-			
 			license = res_xml.findAll("div", { "class":"license-text" })
 			if license:
-				license = str(license[0].getText(separator=u' ')) # Get the license
+				license = re.sub('<[^<]+?>', '', str(license[0]))
+				#license = str(license[0].getText(separator=u' ')) # Get the license
 				license = license.strip()
 			else:
 				license = "CC-BY-SA (default, check actual license)"
@@ -140,7 +143,8 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 			
 			tags = res_xml.findAll("div", { "class":"thing-info-content thing-detail-tags-container" })
 			if tags:
-				tags = str(tags[0].getText(separator=u' ')) # Get the tags
+				tags = re.sub('<[^<]+?>', '', str(tags[0]))
+				#tags = str(tags[0].getText(separator=u' ')) # Get the tags
 				tags = tags.strip()
 			else:
 				tags = "None"
@@ -150,6 +154,7 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 			
 			header = res_xml.findAll("div", { "class":"thing-header-data" })
 			if header:
+				#header = re.sub('<[^<]+?>', '', str(header[0]))
 				header = str(header[0].getText(separator=u' ')) # Get the header (title + date published)
 				header = header.strip()
 			else:
