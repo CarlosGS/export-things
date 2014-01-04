@@ -31,6 +31,7 @@ You can also **browse the generated directories offline**, by simply using a **M
 * Customize authorship
 * Customize the header for the pages
 * Select if files will be re-downloaded if already present
+* Select if things will be re-processed if the folder is already present (to save time when re-running for long lists)
 
 Credit
 --------
