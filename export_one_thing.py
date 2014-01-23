@@ -13,6 +13,7 @@ from BeautifulSoup import BeautifulSoup
 import os
 import re
 import urllib
+import time
 import sys
 
 thingID = sys.argv[1]
@@ -36,7 +37,11 @@ def makeDirs(path):
 def httpGet(page, filename=False, redir=True):
 	if filename and not redownloadExistingFiles and os.path.exists(filename):
 		return [] # Simulate download OK for existing file
-	r = requests.get(page, allow_redirects=redir)
+	try:
+	    r = requests.get(page, allow_redirects=redir)
+	except:
+	    time.sleep(10)
+	    return httpGet(page, filename, redir)
 	if r.status_code != 200:
 		print(r.status_code)
 		return -1
