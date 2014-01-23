@@ -25,7 +25,12 @@ Instructions
 
 You can also **browse the generated directories offline**, by simply using a **Markdown viewer** (i.e. [MarkdownPreview](https://chrome.google.com/webstore/detail/markdown-preview/jmchmkecamhbiokiopfpnfgbidieafmd?hl=en) for Chrome)  
 
-**New features**  
+**New**  
+* Added [another script](export_one_thing.py) that allows fetching a single design. Run as:
+<pre>export_one_thing.py thingID</pre>
+* It will create a directory with the title of the design and all the necessary files.
+
+**Features**  
 * Select which page to download (save your liked things too!)
 * Files can be downloaded OR linked from the original website to save disk space
 * Customize authorship
