@@ -207,7 +207,7 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 					fd.write(thingReadmeHeader + "\n")
 					fd.write(header)
 					if len(images) > 0:
-						fd.write('\n\n![Image](img/' + urllib.quote(images[0]) + ' "Title")\n\n')
+						fd.write('\n\n![Image](img/' + urllib.quote(images[0]) + ')\n\n')
 					fd.write("Description\n--------\n")
 					fd.write(description)
 					fd.write("\n\nInstructions\n--------\n")
@@ -225,7 +225,7 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 					if len(images) > 1:
 						fd.write("\n\nPictures\n--------\n")
 						for image in images[1:]:
-							fd.write('![Image](img/' + urllib.quote(image) + ' "Title")\n')
+							fd.write('![Image](img/' + urllib.quote(image) + ')\n')
 				
 					fd.write("\n\nTags\n--------\n")
 					fd.write(tags + "  \n\n")
