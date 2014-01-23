@@ -13,7 +13,8 @@ from BeautifulSoup import BeautifulSoup
 import os
 import re
 import urllib
-
+import time
+import pickle # For file saving
 
 # EDIT THIS!
 user = "carlosgs" # User from Thingiverse (as in the profile URL)
@@ -38,6 +39,23 @@ redownloadExistingThings = True # If set False, it won't re-download anything fr
 
 url = "https://www.thingiverse.com"
 
+
+# Helper function to dump data to files with Pickle
+def saveToFile(data,path,filename):
+	with open(path+filename, 'wb') as path_file:
+		ret = pickle.dump(data, path_file, protocol=2)
+		path_file.close()
+		return ret
+	raise Exception("Could not save " + path + filename)
+
+# Helper function to load data from files with Pickle
+def loadFromFile(path,filename):
+	with open(path+filename, 'rb') as path_file:
+		ret = pickle.load(path_file)
+		path_file.close()
+		return ret
+	raise Exception("Could not load " + path + filename)
+
 # Helper function to create directories
 def makeDirs(path):
 	try:
@@ -50,7 +68,11 @@ def makeDirs(path):
 def httpGet(page, filename=False, redir=True):
 	if filename and not redownloadExistingFiles and os.path.exists(filename):
 		return [] # Simulate download OK for existing file
-	r = requests.get(page, allow_redirects=redir)
+	try:
+		r = requests.get(page, allow_redirects=redir)
+	except:
+		time.sleep(10)
+		return httpGet(page, filename, redir)
 	if r.status_code != 200:
 		print(r.status_code)
 		return -1
@@ -85,7 +107,7 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 	
 	fdr.write(readmeHeader)
 	
-	thingCount = 0
+	thingCount = 1
 	pgNum = 1
 	while 1: # Iterate over all the pages of things
 		print("\nPage number: " + str(pgNum))
@@ -97,11 +119,16 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 		res_xml = BeautifulSoup(res, convertEntities=BeautifulSoup.HTML_ENTITIES)
 		things = res_xml.findAll("div", { "class":"thing thing-interaction-parent" })
 		for thing in things: # Iterate over each thing
+			thingList[thingCount] = {}
+			
 			#title = str(thing["title"])
 			title = str(thing.findAll("span", { "class":"thing-name" })[0].text.encode('utf-8', 'ignore'))
 			title = re.sub("\[[^\]]*\]","", title) # Optional: Remove text within brackets from the title
 			title = title.strip()
 			id = str(thing["data-thing-id"]) # Get title and id of the current thing
+			
+			thingList[thingCount]["title"] = title
+			thingList[thingCount]["id"] = id
 			
 			print("\nProcessing thing: " + id + " : " + title)
 #			if id != "59196": continue
@@ -111,6 +138,11 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 			previewImgUrl = str(thing.findAll("img", { "class":"thing-img" })[0]["src"]) # Get the link for the preview image
 			previewImgName = previewImgUrl.split('/')[-1]
 			previewImgFile = folder + "/img/" + previewImgName
+			
+			thingList[thingCount]["folder"] = folder
+			thingList[thingCount]["previewImgUrl"] = previewImgUrl
+			thingList[thingCount]["previewImgName"] = previewImgName
+			thingList[thingCount]["previewImgFile"] = previewImgFile
 			
 			if redownloadExistingThings or not os.path.exists(folder):
 				makeDirs(folder) # Create the required directories
@@ -133,20 +165,22 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 					description = description.strip()
 				else:
 					description = "None"
-			
+				thingList[thingCount]["description"] = description
+				
 				instructions = res_xml.findAll("div", { "id":"instructions" })
 				if instructions:
 					instructions = "".join(str(item) for item in instructions[0].contents) # Get the instructions
 					instructions = instructions.strip()
 				else:
 					instructions = "None"
-			
+				thingList[thingCount]["instructions"] = instructions
+				
 				license = res_xml.findAll("div", { "class":"license-text" })
 				if license:
 					license = myGetText(license[0]) # Get the license
 				else:
 					license = "CC-BY-SA (default, check actual license)"
-			
+				thingList[thingCount]["license"] = license
 			
 			
 				tags = res_xml.findAll("div", { "class":"thing-info-content thing-detail-tags-container" })
@@ -155,7 +189,7 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 				else:
 					tags = "None"
 				if len(tags) < 2: tags = "None"
-			
+				thingList[thingCount]["tags"] = tags
 			
 			
 				header = res_xml.findAll("div", { "class":"thing-header-data" })
@@ -164,7 +198,7 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 				else:
 					header = "None"
 				if len(header) < 2: header = "None"
-			
+				thingList[thingCount]["header"] = header
 			
 			
 				files = {}
@@ -188,9 +222,11 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 					files[filePath]["url"] = fileUrl
 					files[filePath]["name"] = fileName
 					files[filePath]["preview"] = filePreviewPath
-			
+				thingList[thingCount]["files"] = files
+				
 				gallery = res_xml.findAll("div", { "class":"thing-page-slider main-slider" })[0]
 				images = []
+				images_full = {}
 				for image in gallery.findAll("div", { "class":"thing-page-image featured" }): # Parse the images and download them
 					imgUrl = str(image["data-large-url"])
 					imgName = imgUrl.split('/')[-1]
@@ -198,7 +234,10 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 					print("Downloading image ( " + imgName + " )")
 					httpGet(imgUrl, imgFile)
 					images.append(imgName)
-			
+					images_full[imgFile] = {}
+					images_full[imgFile]["url"] = imgUrl
+					images_full[imgFile]["name"] = imgName
+				thingList[thingCount]["images"] = images_full
 			
 				# Write in the page for the thing
 				with open(folder + "/README.md", 'w') as fd: # Generate the README file for the thing
@@ -237,21 +276,14 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 						fd.write(authorDescription)
 					fd.close()
 			
-			
-			thingList[title] = {}
-			thingList[title]["title"] = title
-			thingList[title]["folder"] = folder
-			thingList[title]["img"] = urllib.quote(previewImgFile)
-			#thingList[title]["description"] = description
-			
-			thingCount += 1
-			
-			thing = thingList[title]
+			thing = thingList[thingCount]
 			# Add to the global thing list
 			fdr.write(str(thingCount) + '. [' + thing["title"] + '](' + thing["folder"] + '/)\n')
 			fdr.write("--------\n")
-			fdr.write('[![Image](' + thing["img"] + ')](' + thing["folder"] + '/)  \n\n')
+			fdr.write('[![Image](' + thing["previewImgFile"] + ')](' + thing["folder"] + '/)  \n\n')
 			fdr.flush()
+			
+			thingCount += 1
 			
 			#if thingCount > 2: break
 		#if thingCount > 2: break
@@ -264,6 +296,8 @@ with open("README.md", 'w') as fdr: # Generate the global README file with the l
 		fdr.write("\n\nBy: " + authorName + "\n--------\n")
 		fdr.write(authorDescription)
 	fdr.close()
+
+saveToFile(thingList,"./","thingList_data.p")
 
 print("\n\nIt's done!! Keep knowledge free!! Au revoir Thingiverse!!\n")
 
