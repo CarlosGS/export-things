@@ -47,7 +47,7 @@ def httpGet(page, filename=False, redir=True):
 		return -1
 	if not filename:
 		# Remove all non ascii characters
-		text = (c for c in r.text if 0 < ord(c) < 127)
+		text = (c for c in r.content if 0 < ord(c) < 127) # changed from r.text to r.content
 		text = ''.join(text)
 		return text.encode('ascii', 'ignore')
 	else:

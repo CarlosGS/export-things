@@ -42,6 +42,7 @@ Credit
 --------
 * Thanks to everyone who is re-sharing the script
 * Thanks to **Derrick Oswald** for writing installation instructions
+* Thanks to [**Mark Durbin (MakeALot)**](https://twitter.com/MarkDurbin104) for a bugfix
 
 Author: Carlos Garcia Saura (carlosgs)
 --------
