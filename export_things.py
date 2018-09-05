@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # Thingiverse* exporter
-# by Carlos Garcia Saura (http://carlosgs.es)
+# by Carlos Garcia Saura
 # CC-BY-SA license (http://creativecommons.org/licenses/by-sa/3.0/)
 # https://github.com/carlosgs/export-things
 # *Unofficial program, not associated with Thingiverse
@@ -19,7 +19,7 @@ import pickle # For file saving
 # EDIT THIS!
 user = "carlosgs" # User from Thingiverse (as in the profile URL)
 authorName = "Carlos Garcia Saura (carlosgs)" # Any string is OK
-authorDescription = "<http://carlosgs.es/>"
+authorDescription = "<http://example.com/>"
 
 readmeHeader = "**Please note: This list of things was [automatically generated](https://github.com/carlosgs/export-things). Make sure to check the individual licenses and authorships.**  \n"
 
