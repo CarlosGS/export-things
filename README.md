@@ -45,8 +45,6 @@ Credit
 * Thanks to [**Mark Durbin (MakeALot)**](https://twitter.com/MarkDurbin104) for a bugfix
 
 Author: Carlos Garcia Saura (carlosgs)
---------
-<http://carlosgs.es/>  
 
 License
 --------
